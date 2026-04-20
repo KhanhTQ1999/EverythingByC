@@ -1,0 +1,40 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../inc/parser.h
+typedef.h
+../inc/typedef.h
+
+../inc/typedef.h
+stdio.h
+-
+stdlib.h
+-
+stdint.h
+-
+stdbool.h
+-
+string.h
+-
+unistd.h
+-
+fcntl.h
+-
+sys/wait.h
+-
+
+../inc/utils.h
+typedef.h
+../inc/typedef.h
+
+/home/khanh/Work/EverythingByC/own-shell/src/parser.c
+parser.h
+/home/khanh/Work/EverythingByC/own-shell/src/parser.h
+utils.h
+/home/khanh/Work/EverythingByC/own-shell/src/utils.h
+

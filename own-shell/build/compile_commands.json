@@ -1,0 +1,27 @@
+[
+{
+  "directory": "/home/khanh/Work/EverythingByC/own-shell/build",
+  "command": "/usr/bin/gcc  -I/home/khanh/Work/EverythingByC/own-shell/inc  -g   -Wall -Wextra -Wpedantic -g -O0 -std=gnu11 -o CMakeFiles/shell.dir/src/app_state.c.o   -c /home/khanh/Work/EverythingByC/own-shell/src/app_state.c",
+  "file": "/home/khanh/Work/EverythingByC/own-shell/src/app_state.c"
+},
+{
+  "directory": "/home/khanh/Work/EverythingByC/own-shell/build",
+  "command": "/usr/bin/gcc  -I/home/khanh/Work/EverythingByC/own-shell/inc  -g   -Wall -Wextra -Wpedantic -g -O0 -std=gnu11 -o CMakeFiles/shell.dir/src/executor.c.o   -c /home/khanh/Work/EverythingByC/own-shell/src/executor.c",
+  "file": "/home/khanh/Work/EverythingByC/own-shell/src/executor.c"
+},
+{
+  "directory": "/home/khanh/Work/EverythingByC/own-shell/build",
+  "command": "/usr/bin/gcc  -I/home/khanh/Work/EverythingByC/own-shell/inc  -g   -Wall -Wextra -Wpedantic -g -O0 -std=gnu11 -o CMakeFiles/shell.dir/src/parser.c.o   -c /home/khanh/Work/EverythingByC/own-shell/src/parser.c",
+  "file": "/home/khanh/Work/EverythingByC/own-shell/src/parser.c"
+},
+{
+  "directory": "/home/khanh/Work/EverythingByC/own-shell/build",
+  "command": "/usr/bin/gcc  -I/home/khanh/Work/EverythingByC/own-shell/inc  -g   -Wall -Wextra -Wpedantic -g -O0 -std=gnu11 -o CMakeFiles/shell.dir/src/utils.c.o   -c /home/khanh/Work/EverythingByC/own-shell/src/utils.c",
+  "file": "/home/khanh/Work/EverythingByC/own-shell/src/utils.c"
+},
+{
+  "directory": "/home/khanh/Work/EverythingByC/own-shell/build",
+  "command": "/usr/bin/gcc  -I/home/khanh/Work/EverythingByC/own-shell/inc  -g   -Wall -Wextra -Wpedantic -g -O0 -std=gnu11 -o CMakeFiles/shell.dir/main.c.o   -c /home/khanh/Work/EverythingByC/own-shell/main.c",
+  "file": "/home/khanh/Work/EverythingByC/own-shell/main.c"
+}
+]

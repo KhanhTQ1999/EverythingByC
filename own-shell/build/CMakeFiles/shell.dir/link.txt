@@ -1,0 +1,1 @@
+/usr/bin/gcc -g   CMakeFiles/shell.dir/src/app_state.c.o CMakeFiles/shell.dir/src/executor.c.o CMakeFiles/shell.dir/src/parser.c.o CMakeFiles/shell.dir/src/utils.c.o CMakeFiles/shell.dir/main.c.o  -o shell 
