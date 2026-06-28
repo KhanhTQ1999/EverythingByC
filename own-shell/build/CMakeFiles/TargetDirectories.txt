@@ -1,3 +1,0 @@
-/home/khanh/Work/EverythingByC/own-shell/build/CMakeFiles/rebuild_cache.dir
-/home/khanh/Work/EverythingByC/own-shell/build/CMakeFiles/edit_cache.dir
-/home/khanh/Work/EverythingByC/own-shell/build/CMakeFiles/shell.dir
