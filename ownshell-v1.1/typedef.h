@@ -1,4 +1,5 @@
 #pragma once
+#include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -12,3 +13,6 @@ typedef bool b8;
 
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
+
+#define USR_INPUT_MAX 1024
+#define PATH_LEN_MAX 1024

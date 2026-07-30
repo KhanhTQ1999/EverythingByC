@@ -17,8 +17,9 @@ void cstr_append(cstr* str, const char* s) {
         str->data = new_data;
         str->capacity = new_capacity;
     }
-    memcpy(str->data + str->size, s, len + 1);
+    memcpy(str->data + str->size, s, len);
     str->size += len;
+    str->data[str->size] = '\0';
 }
 
 void cstr_appendn(cstr* str, const char* s, size_t n) {
@@ -49,6 +50,9 @@ int cstr_pop(cstr* str) {
 }
 
 void cstr_free(cstr* str) {
+    if(str == NULL) { return; }
+    if(str->data == NULL) { return; }
+
     free(str->data);
     str->data = NULL;
     str->size = 0;

@@ -9,9 +9,13 @@
 #include "typedef.h"
 #include "cstr.h"
 #include "vec.h"
-#include "command.h"
+#include "lexer.h"
+#include "parser.h"
+#include "dispose.h"
 #include "completions.h"
 #include "shell.h"
+#include "execute_cmd.h"
+#include "history.h"
 
 #define PROMPT "$ "
 
@@ -25,6 +29,7 @@ static struct termios orig_termios;
 static void s_handle_sigint(int sig) {
     (void)sig;
     s_disable_raw_mode();
+    s_shell_exit(0);
 }
 
 static void s_shell_exit(i32 status) {
@@ -40,6 +45,7 @@ static i32 s_readline(cstr *input) {
     b8 double_quote = false;
     b8 single_quote = false;
     b8 backslash = false;
+    u32 history_idx = 0;
 
     s_enable_raw_mode();
     while(1){
@@ -48,6 +54,36 @@ static i32 s_readline(cstr *input) {
         /* Handle read errors or EOF */
         if(n <= 0){
             return -1;
+        }
+        /* Handle up-arrow and down-arrow */
+        if(c == 0x1b) {
+            char seq[3];
+            if (read(STDIN_FILENO, &seq[0], 1) == 0) continue;
+            if (read(STDIN_FILENO, &seq[1], 1) == 0) continue;
+
+            if (seq[0] == '[' && seq[1] == 'A') {
+                cstr entry = {0};
+                history_idx = history_idx > 0 ? history_idx - 1 : history_size() - 1;
+                if(history_idx >= 0 &&  history_get(history_idx, &entry) == 0){
+                    printf("\x1B[1K\r$ %s", entry.data);
+                    fflush(stdout);
+                    cstr_copy(input, &entry);
+                }
+                cstr_free(&entry);
+                continue;
+            }
+
+            if (seq[0] == '[' && seq[1] == 'B') {
+                cstr entry = {0};
+                history_idx = history_idx < history_size() - 1 ? history_idx + 1 : 0;
+                if(history_idx < history_size() && history_get(history_idx, &entry) == 0){
+                    printf("\x1B[1K\r$ %s", entry.data);
+                    fflush(stdout);
+                    cstr_copy(input, &entry);
+                }
+                cstr_free(&entry);
+                continue;
+            }
         }
         /* Handle newline / enter */
         if(c == '\n'){
@@ -92,7 +128,11 @@ static i32 s_readline(cstr *input) {
         /* Handle printable characters */
         if (isprint((unsigned char)c)) {
             write(STDOUT_FILENO, &c, 1);
-            cstr_append(input, &c);
+            char buf[2] = {c, '\0'};
+            cstr_append(input, buf);
+            // for(u32 i = 0; i < input->size; ++i) {
+            //     printf("[DEBUG] input->data[%d]: %c\n", i, input->data[i]);
+            // }
         }
     }
     s_disable_raw_mode();
@@ -115,24 +155,45 @@ static void s_disable_raw_mode() {
 
 void do_repl(){
     b8 running = true;
-    cstr input = {0};
+    
 
     while(running){
         write(STDOUT_FILENO, PROMPT, sizeof(PROMPT) - 1);
-        memset(&input, 0, sizeof(cstr));
+        cstr input = {0};
         i32 bytes_read = s_readline(&input);
         if(bytes_read <= 0 || input.size == 0){
             continue;
         }
-        Command cmd = parse_command(&input);
-        printf("You entered: %s\n", input.data);
+
+        history_add(&input);
+
+        TokenList tokens = {0};
+        if(lex(&input, &tokens) != 0){
+            printf("Lexing error\n");
+            cstr_free(&input);
+            continue;
+        }
+
+        Command *cmd = parse(&tokens, 0);
+        if(cmd == NULL){
+            printf("Parsing error\n");
+            dispose_token_list(&tokens);
+            cstr_free(&input);
+            continue;
+        }
+
+        execute(cmd);
         fflush(stdout);
+
+        dispose_command(cmd);
+        dispose_token_list(&tokens);
+        cstr_free(&input);
     }
-    cstr_free(&input);
 }
 
 int main(int argc, char *argv[]) {
     signal(SIGINT, s_handle_sigint);
+    history_startup();
     do_repl();
     return 0;
 }
