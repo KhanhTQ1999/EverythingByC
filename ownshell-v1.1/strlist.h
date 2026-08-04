@@ -51,3 +51,29 @@ typedef struct str_list {
         } \
         index; \
     })
+
+#define strlist_concat(dest, src) \
+    do { \
+        for(u32 i = 0; i < (src)->size; i++) { \
+            cstr new_str = {0}; \
+            cstr_copy(&new_str, &(src)->data[i]); \
+            vec_append((dest), new_str); \
+        } \
+    } while(0)
+
+#define strlist_to_set(strlist, cmp) \
+    do { \
+        strlist_bubble_sort((strlist), (cmp)); \
+        u32 new_size = 0; \
+        for(u32 i = 0; i < (strlist)->size; i++) { \
+            if(i == 0 || strcmp((strlist)->data[i].data, (strlist)->data[i - 1].data) != 0) { \
+                if(new_size != i) { \
+                    (strlist)->data[new_size] = (strlist)->data[i]; \
+                } \
+                new_size++; \
+            } else { \
+                cstr_free(&(strlist)->data[i]); \
+            } \
+        } \
+        (strlist)->size = new_size; \
+    } while(0)

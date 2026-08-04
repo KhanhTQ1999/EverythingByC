@@ -162,15 +162,13 @@ static void s_lex_number(Scanner *scanner){
         c = s_scanner_next(scanner);
     }
 
-    if(s_scanner_end(scanner)){
-        s_scanner_make_token(scanner, TOKEN_STRING);
-        return;
-    }
-
     if(c == '>'){
         s_scanner_make_token(scanner, TOKEN_REDIRECT_FD);
     }
 
+    if(s_scanner_end(scanner)){
+        return;
+    }
     s_scanner_back(scanner);
     s_set_scanner_state(scanner, SCAN_NORMAL);
 }
@@ -206,6 +204,10 @@ i32 lex(cstr *input, TokenList *tokens) {
             case SCAN_IN_DIGIT:         s_lex_number(&scanner); break;
             default: break;
         }
+    }
+
+    if(scanner.current_token.value.size > 0){
+        s_scanner_make_token(&scanner, TOKEN_STRING);
     }
 
     tokens_list_copy(tokens, &scanner.tokens);

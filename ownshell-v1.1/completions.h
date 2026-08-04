@@ -16,4 +16,18 @@ typedef struct comp_context {
     enum comp_type type; // 0: no context, 1: command word, 2: argument
 } CompContext;
 
+typedef struct completer_script {
+    cstr script; // The script to be executed for completion
+    cstr command; // The command to be completed
+    StrList args; // Arguments for the completion script
+} CompleterScript;
+
+typedef struct{
+    CompleterScript *data;
+    u32 size;
+    u32 capacity;
+}CompleterScriptList;
+
 StrList complete_command_word(cstr *input);
+CompleterScript* get_completer_script(const cstr *command);
+i32 register_completer_script(const cstr *script, const cstr *command);

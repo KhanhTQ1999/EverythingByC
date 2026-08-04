@@ -79,3 +79,13 @@
     } while(0)
 
 #define vec_size(vec) ((vec)->size)
+
+#define vec_remove(vec, index) \
+    do { \
+        if ((index) < (vec)->size) { \
+            memmove(&(vec)->data[(index)], &(vec)->data[(index) + 1], ((vec)->size - (index) - 1) * sizeof(*(vec)->data)); \
+            (vec)->size--; \
+        } \
+    } while(0)
+
+

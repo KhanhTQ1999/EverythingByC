@@ -42,6 +42,7 @@ Command* parse(TokenList *tokens, u32 idx){
                 i += 2; // Skip the next two tokens as they are part of the redirection
                 break;
             case TOKEN_REDIRECT_OUTPUT:
+            case TOKEN_REDIRECT_OUTPUT_APPEND:
                 parse_redirout_tok(cur, tokens, i);
                 ++i; // Skip the next token as it's part of the redirection
                 break;
@@ -91,8 +92,6 @@ static void parse_redirfd_tok(Command *cmd, TokenList *toks, u32 idx){
 
     cstr_copy(&redir.filename, &toks->data[idx + 2].value);
     vec_append(&cmd->redirs, redir);
-
-    dispose_redir(&redir);
 }
 
 static void parse_redirout_tok(Command *cmd, TokenList *toks, u32 idx){

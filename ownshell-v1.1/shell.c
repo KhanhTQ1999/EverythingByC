@@ -5,6 +5,8 @@
 #include <signal.h>
 #include <termios.h>
 #include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
 #include "typedef.h"
 #include "cstr.h"
@@ -16,6 +18,7 @@
 #include "shell.h"
 #include "execute_cmd.h"
 #include "history.h"
+#include "jobs.h"
 
 #define PROMPT "$ "
 
@@ -105,9 +108,14 @@ static i32 s_readline(cstr *input) {
                 write(STDOUT_FILENO, "\x1B[1K\r", 5);
                 write(STDOUT_FILENO, "$ ", 2);
                 write(STDOUT_FILENO, input->data, input->size);
+                write(STDOUT_FILENO, " ", 1);
+                cstr_append(input, " ");
             }else if(vec_size(&matches) > 1) {
                 if(!tab_pressed) {
                     write(STDOUT_FILENO, "\a", 1); //bell sound
+                    write(STDOUT_FILENO, "\x1B[1K\r", 5);
+                    write(STDOUT_FILENO, "$ ", 2);
+                    write(STDOUT_FILENO, input->data, input->size);
                 }else{
                     write(STDOUT_FILENO, "\n", 1);
                     for(u32 i = 0; i < matches.size; i++) {
@@ -133,6 +141,7 @@ static i32 s_readline(cstr *input) {
             // for(u32 i = 0; i < input->size; ++i) {
             //     printf("[DEBUG] input->data[%d]: %c\n", i, input->data[i]);
             // }
+            tab_pressed = false;
         }
     }
     s_disable_raw_mode();
@@ -158,6 +167,28 @@ void do_repl(){
     
 
     while(running){
+        JobList job_list = jobs_list();
+        for(i32 i = job_list.size - 1; i >= 0; --i) {
+            i32 status = 0;
+            if(waitpid(job_list.data[i].pid, &status, WNOHANG) > 0) {
+                char marker = ' ';
+                if(i == job_list.size - 1) {
+                    marker = '+';
+                } else if(i == job_list.size - 2) {
+                    marker = '-';
+                } else {
+                    marker = ' ';
+                }
+                if(WIFEXITED(status) || WIFSIGNALED(status)) {
+                    printf("[%d]%c %s \t%s\n",
+                        job_list.data[i].job_id,
+                        marker,
+                        "Done",
+                        job_list.data[i].command.data);
+                    jobs_remove(job_list.data[i].job_id);
+                }
+            }
+        }
         write(STDOUT_FILENO, PROMPT, sizeof(PROMPT) - 1);
         cstr input = {0};
         i32 bytes_read = s_readline(&input);

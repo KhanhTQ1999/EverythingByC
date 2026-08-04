@@ -7,6 +7,7 @@
 #include "execute_cmd.h"
 #include "builtin.h"
 #include "utils.h"
+#include "jobs.h"
 
 static i32 execute_external_command(SimpleCommand *cmd, int async);
 static void execute_simple_command(SimpleCommand *cmd, int async);
@@ -76,7 +77,16 @@ static i32 execute_external_command(SimpleCommand *cmd, int async) {
     } else if(pid > 0) {
         int status;
         if(async) {
-            printf("[1] %d\n", pid);
+            cstr raw = {0};
+            for(u32 i = 0; i < cmd->size; ++i) {
+                cstr_append(&raw, cmd->data[i].data);
+                if(i < cmd->size - 1) {
+                    cstr_append(&raw, " ");
+                }
+            }
+            i32 job_id = jobs_add(pid, JOB_RUNNING, &raw);
+            printf("[%d] %d\n", job_id, pid);
+            cstr_free(&raw);
         }else{
             waitpid(pid, &status, 0);
             ret = WIFEXITED(status) ? WEXITSTATUS(status) : -1;

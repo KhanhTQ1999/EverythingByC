@@ -16,3 +16,4 @@ typedef bool b8;
 
 #define USR_INPUT_MAX 1024
 #define PATH_LEN_MAX 1024
+#define NO_PIPE -1
